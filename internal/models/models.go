@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Tabela de usuário
 type Usuario struct {
 	UserID     uint      `gorm:"primaryKey;column:user_id"`
 	Apelido    string    `gorm:"size:30;not null"`
@@ -19,6 +20,7 @@ type Usuario struct {
 
 func (Usuario) TableName() string { return "usuario" }
 
+// Tabela de personagem
 type Personagem struct {
 	PersonagemID uint   `gorm:"primaryKey;column:personagem_id"`
 	Nome         string `gorm:"size:20;not null"`
@@ -29,6 +31,7 @@ type Personagem struct {
 
 func (Personagem) TableName() string { return "personagem" }
 
+// Tabela de guia
 type Guia struct {
 	GuiaID       uint        `gorm:"primaryKey;column:guia_id"`
 	Titulo       string      `gorm:"size:50;not null"`
@@ -47,6 +50,7 @@ type Guia struct {
 
 func (Guia) TableName() string { return "guia" }
 
+// Tabela de eventos
 type Eventos struct {
 	EventosID uint      `gorm:"primaryKey;column:eventos_id"`
 	Titulo    string    `gorm:"size:75;not null"`
@@ -59,6 +63,7 @@ type Eventos struct {
 
 func (Eventos) TableName() string { return "eventos" }
 
+// Tabela de ultimo evento
 type UltimoEvento struct {
 	UeID        uint    `gorm:"primaryKey;column:ue_id"`
 	Titulo      string  `gorm:"size:75;not null"`
