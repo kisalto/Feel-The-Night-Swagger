@@ -8,9 +8,15 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   bin = "./tmp/main"
-  cmd = "swag init -g cmd/api/main.go && go build -o ./tmp/main ./cmd/api"
+  # Linux cmd
+  # cmd = "swag init -g cmd/api/main.go && go build -o ./tmp/main ./cmd/api"
+  # Windows cmd
+  cmd = "go build -o ./tmp/main.exe ./cmd/api"
   delay = 1000
-  entrypoint = ["./tmp/main"]
+  # Linux entrypoint
+  # entrypoint = ["./tmp/main"]
+  # Windows entrypoint
+  entrypoint = ["./tmp/main.exe"]
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "docs"]
   exclude_file = []
   exclude_regex = ["_test.go"]

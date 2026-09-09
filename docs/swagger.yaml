@@ -15,55 +15,67 @@ definitions:
     - nickname
     - password
     type: object
-  models.Character:
+  dto.ErrorResponse:
     properties:
-      character_id:
+      error:
+        example: usuário não encontrado
+        type: string
+    type: object
+  dto.UserResponse:
+    properties:
+      discordID:
+        type: string
+      email:
+        type: string
+      eventCount:
         type: integer
-      description:
+      guideCount:
+        type: integer
+      isModerator:
+        type: boolean
+      isVeteran:
+        type: boolean
+      nickname:
         type: string
-      guides:
-        items:
-          $ref: '#/definitions/models.Guide'
-        type: array
-      image_url:
+      registrationDate:
         type: string
-      name:
-        type: string
-      type:
-        type: string
+      userID:
+        type: integer
     type: object
   models.Event:
     properties:
-      banner_url:
+      bannerURL:
         type: string
       day:
         type: string
       description:
         type: string
-      event_id:
+      eventID:
         type: integer
+      lastEvents:
+        description: Has many LastEvents
+        items:
+          $ref: '#/definitions/models.LastEvent'
+        type: array
       title:
         type: string
-      user:
-        $ref: '#/definitions/models.User'
-      user_id:
+      userID:
+        description: Foreign Key (Belongs to User)
         type: integer
     type: object
   models.Guide:
     properties:
-      banner_url:
+      bannerURL:
         type: string
-      character:
-        $ref: '#/definitions/models.Character'
-      character_id:
+      characterID:
         type: integer
-      creation_date:
+      creationDate:
         type: string
       description:
         type: string
       dislikes:
         type: integer
-      guide_id:
+      guideID:
         type: integer
       likes:
         type: integer
@@ -73,40 +85,50 @@ definitions:
         type: string
       type:
         type: string
-      user:
-        $ref: '#/definitions/models.User'
-      user_id:
+      userID:
+        description: Foreign Keys (Belongs to User and Character)
         type: integer
+    type: object
+  models.LastEvent:
+    properties:
+      eventID:
+        description: Foreign Key (Belongs to Event)
+        type: integer
+      lastEventID:
+        type: integer
+      title:
+        type: string
     type: object
   models.User:
     properties:
-      discord_id:
+      discordID:
         type: string
       email:
         type: string
-      event_count:
+      eventCount:
         type: integer
       events:
+        description: Has many Events and Guides
         items:
           $ref: '#/definitions/models.Event'
         type: array
-      guide_count:
+      guideCount:
         type: integer
       guides:
         items:
           $ref: '#/definitions/models.Guide'
         type: array
-      is_moderator:
+      isModerator:
         type: boolean
-      is_veteran:
+      isVeteran:
         type: boolean
       nickname:
         type: string
       password:
         type: string
-      registration_date:
+      registrationDate:
         type: string
-      user_id:
+      userID:
         type: integer
     type: object
 host: localhost:8080
@@ -145,36 +167,57 @@ paths:
       tags:
       - User
   /users/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Retorna os dados de um usuário pelo ID
+    delete:
       parameters:
-      - description: Dados do usuário
-        in: body
-        name: user
+      - description: ID do usuário
+        in: path
+        minimum: 1
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/dto.CreateUserInput'
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            additionalProperties:
+              type: string
+            type: object
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/dto.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Deletar usuário por ID
+      tags:
+      - User
+    get:
+      parameters:
+      - description: ID do usuário
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
       summary: Buscar usuário por ID
       tags:
       - User

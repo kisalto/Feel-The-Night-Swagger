@@ -60,10 +60,6 @@ const docTemplate = `{
         },
         "/users/{id}": {
             "get": {
-                "description": "Retorna os dados de um usuário pelo ID",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -73,38 +69,73 @@ const docTemplate = `{
                 "summary": "Buscar usuário por ID",
                 "parameters": [
                     {
-                        "description": "Dados do usuário",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.CreateUserInput"
-                        }
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ID do usuário",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/dto.UserResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Deletar usuário por ID",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ID do usuário",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
                             "type": "object",
                             "additionalProperties": {
                                 "type": "string"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     }
                 }
@@ -134,36 +165,51 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Character": {
+        "dto.ErrorResponse": {
             "type": "object",
             "properties": {
-                "character_id": {
+                "error": {
+                    "type": "string",
+                    "example": "usuário não encontrado"
+                }
+            }
+        },
+        "dto.UserResponse": {
+            "type": "object",
+            "properties": {
+                "discordID": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "eventCount": {
                     "type": "integer"
                 },
-                "description": {
+                "guideCount": {
+                    "type": "integer"
+                },
+                "isModerator": {
+                    "type": "boolean"
+                },
+                "isVeteran": {
+                    "type": "boolean"
+                },
+                "nickname": {
                     "type": "string"
                 },
-                "guides": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Guide"
-                    }
-                },
-                "image_url": {
+                "registrationDate": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
+                "userID": {
+                    "type": "integer"
                 }
             }
         },
         "models.Event": {
             "type": "object",
             "properties": {
-                "banner_url": {
+                "bannerURL": {
                     "type": "string"
                 },
                 "day": {
@@ -172,16 +218,21 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "event_id": {
+                "eventID": {
                     "type": "integer"
+                },
+                "lastEvents": {
+                    "description": "Has many LastEvents",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.LastEvent"
+                    }
                 },
                 "title": {
                     "type": "string"
                 },
-                "user": {
-                    "$ref": "#/definitions/models.User"
-                },
-                "user_id": {
+                "userID": {
+                    "description": "Foreign Key (Belongs to User)",
                     "type": "integer"
                 }
             }
@@ -189,16 +240,13 @@ const docTemplate = `{
         "models.Guide": {
             "type": "object",
             "properties": {
-                "banner_url": {
+                "bannerURL": {
                     "type": "string"
                 },
-                "character": {
-                    "$ref": "#/definitions/models.Character"
-                },
-                "character_id": {
+                "characterID": {
                     "type": "integer"
                 },
-                "creation_date": {
+                "creationDate": {
                     "type": "string"
                 },
                 "description": {
@@ -207,7 +255,7 @@ const docTemplate = `{
                 "dislikes": {
                     "type": "integer"
                 },
-                "guide_id": {
+                "guideID": {
                     "type": "integer"
                 },
                 "likes": {
@@ -222,33 +270,47 @@ const docTemplate = `{
                 "type": {
                     "type": "string"
                 },
-                "user": {
-                    "$ref": "#/definitions/models.User"
-                },
-                "user_id": {
+                "userID": {
+                    "description": "Foreign Keys (Belongs to User and Character)",
                     "type": "integer"
+                }
+            }
+        },
+        "models.LastEvent": {
+            "type": "object",
+            "properties": {
+                "eventID": {
+                    "description": "Foreign Key (Belongs to Event)",
+                    "type": "integer"
+                },
+                "lastEventID": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
         "models.User": {
             "type": "object",
             "properties": {
-                "discord_id": {
+                "discordID": {
                     "type": "string"
                 },
                 "email": {
                     "type": "string"
                 },
-                "event_count": {
+                "eventCount": {
                     "type": "integer"
                 },
                 "events": {
+                    "description": "Has many Events and Guides",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Event"
                     }
                 },
-                "guide_count": {
+                "guideCount": {
                     "type": "integer"
                 },
                 "guides": {
@@ -257,10 +319,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.Guide"
                     }
                 },
-                "is_moderator": {
+                "isModerator": {
                     "type": "boolean"
                 },
-                "is_veteran": {
+                "isVeteran": {
                     "type": "boolean"
                 },
                 "nickname": {
@@ -269,10 +331,10 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "registration_date": {
+                "registrationDate": {
                     "type": "string"
                 },
-                "user_id": {
+                "userID": {
                     "type": "integer"
                 }
             }

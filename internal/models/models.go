@@ -6,78 +6,81 @@ import (
 
 // User table
 type User struct {
-	UserID           uint      `gorm:"primaryKey;column:user_id" json:"user_id"`
-	Nickname         string    `gorm:"size:30;not null;column:nickname" json:"nickname"`
-	Email            string    `gorm:"size:50;not null;column:email" json:"email"`
-	DiscordID        string    `gorm:"size:25;column:dc_id" json:"discord_id"`
-	Password         string    `gorm:"size:30;not null;column:password" json:"password"`
-	RegistrationDate time.Time `gorm:"type:date;default:CURRENT_DATE;column:registration_date" json:"registration_date"`
-	EventCount       int       `gorm:"default:0;column:event_count" json:"event_count"`
-	GuideCount       int       `gorm:"default:0;column:guide_count" json:"guide_count"`
-	IsModerator      bool      `gorm:"default:false;column:is_moderator" json:"is_moderator"`
-	IsVeteran        bool      `gorm:"default:false;column:is_veteran" json:"is_veteran"`
+	UserID           uint      `gorm:"primaryKey"`
+	Nickname         string    `gorm:"size:30;not null"`
+	Email            string    `gorm:"size:50;not null"`
+	DiscordID        string    `gorm:"size:25"`
+	Password         string    `gorm:"size:30;not null"`
+	RegistrationDate time.Time `gorm:"default:CURRENT_DATE"`
+	EventCount       int       `gorm:"default:0"`
+	GuideCount       int       `gorm:"default:0"`
+	IsModerator      bool      `gorm:"default:false"`
+	IsVeteran        bool      `gorm:"default:false"`
 
-	Events []Event `gorm:"foreignKey:UserID" json:"events,omitempty"`
-	Guides []Guide `gorm:"foreignKey:UserID" json:"guides,omitempty"`
+	// Has many Events and Guides
+	Events []Event
+	Guides []Guide
 }
 
-func (User) TableName() string { return "User" }
+func (User) TableName() string { return "users" }
 
 // Character table
 type Character struct {
-	CharacterID uint   `gorm:"primaryKey;column:character_id" json:"character_id"`
-	Name        string `gorm:"size:20;not null;column:name" json:"name"`
-	Description string `gorm:"size:255;not null;column:description" json:"description"`
-	ImageURL    string `gorm:"size:255;column:image_url" json:"image_url"`
-	Type        string `gorm:"size:15;not null;column:type" json:"type"`
+	CharacterID uint   `gorm:"primaryKey"`
+	Name        string `gorm:"size:20;not null"`
+	Description string `gorm:"size:255;not null"`
+	ImageURL    string `gorm:"size:255"`
+	Type        string `gorm:"size:15;not null"`
 
-	Guides []Guide `gorm:"foreignKey:CharacterID" json:"guides,omitempty"`
+	// Has many guides
+	Guides []Guide
 }
 
-func (Character) TableName() string { return "character" }
+func (Character) TableName() string { return "characters" }
 
 // Guide table
 type Guide struct {
-	GuideID      uint      `gorm:"primaryKey;column:guide_id" json:"guide_id"`
-	Title        string    `gorm:"size:50;not null;column:title" json:"title"`
-	BannerURL    string    `gorm:"size:255;column:banner_url" json:"banner_url"`
-	Type         string    `gorm:"size:30;column:type" json:"type"`
-	Description  string    `gorm:"size:50;not null;column:description" json:"description"`
-	Link         string    `gorm:"size:2083;not null;column:link" json:"link"`
-	CreationDate time.Time `gorm:"type:date;default:CURRENT_DATE;column:creation_date" json:"creation_date"`
-	Likes        int       `gorm:"default:0;column:likes" json:"likes"`
-	Dislikes     int       `gorm:"default:0;column:dislikes" json:"dislikes"`
+	GuideID      uint      `gorm:"primaryKey"`
+	Title        string    `gorm:"size:20;not null"`
+	BannerURL    string    `gorm:"size:255"`
+	Type         string    `gorm:"size:15"`
+	Description  string    `gorm:"size:50;not null"`
+	Link         string    `gorm:"size:2083"`
+	CreationDate time.Time `gorm:"default:CURRENT_DATE"`
+	Likes        int       `gorm:"default:0"`
+	Dislikes     int       `gorm:"default:0"`
 
-	CharacterID *uint `gorm:"column:fk_character_id" json:"character_id,omitempty"`
-	UserID      uint  `gorm:"column:fk_user_id;not null" json:"user_id"`
-
-	User      *User      `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE" json:"user,omitempty"`
-	Character *Character `gorm:"foreignKey:CharacterID;references:CharacterID;constraint:OnDelete:SET NULL" json:"character,omitempty"`
+	// Foreign Keys (Belongs to User and Character)
+	UserID      uint
+	CharacterID uint
 }
 
-func (Guide) TableName() string { return "guide" }
+func (Guide) TableName() string { return "guides" }
 
 // Event table
 type Event struct {
-	EventID     uint      `gorm:"primaryKey;column:event_id" json:"event_id"`
-	Title       string    `gorm:"size:75;not null;column:title" json:"title"`
-	Description string    `gorm:"size:255;not null;column:description" json:"description"`
-	BannerURL   string    `gorm:"size:255;column:banner_url" json:"banner_url"`
-	Day         time.Time `gorm:"type:date;column:day" json:"day"`
+	EventID     uint      `gorm:"primaryKey"`
+	Title       string    `gorm:"size:75;not null"`
+	Description string    `gorm:"size:255;not null"`
+	BannerURL   string    `gorm:"size:255"`
+	Day         time.Time `gorm:"type:date;not null"`
 
-	UserID uint  `gorm:"column:fk_user_id;not null" json:"user_id"`
-	User   *User `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE" json:"user,omitempty"`
+	// Foreign Key (Belongs to User)
+	UserID uint
+
+	// Has many LastEvents
+	LastEvents []LastEvent
 }
 
-func (Event) TableName() string { return "event" }
+func (Event) TableName() string { return "events" }
 
 // LastEvent table
 type LastEvent struct {
-	LastEventID uint   `gorm:"primaryKey;column:last_event_id" json:"last_event_id"`
-	Title       string `gorm:"size:75;not null;column:title" json:"title"`
+	LastEventID uint   `gorm:"primaryKey"`
+	Title       string `gorm:"size:75;not null"`
 
-	EventID uint   `gorm:"column:fk_event_id;not null" json:"event_id"`
-	Event   *Event `gorm:"foreignKey:EventID;references:EventID;constraint:OnDelete:CASCADE" json:"event,omitempty"`
+	// Foreign Key (Belongs to Event)
+	EventID uint
 }
 
-func (LastEvent) TableName() string { return "last_event" }
+func (LastEvent) TableName() string { return "last_events" }

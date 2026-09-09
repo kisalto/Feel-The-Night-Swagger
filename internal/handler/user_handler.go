@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+
 	dto "github.com/kisalto/Feel-The-Night-Swagger/internal/dto"
 	"github.com/kisalto/Feel-The-Night-Swagger/internal/models"
 	"github.com/kisalto/Feel-The-Night-Swagger/internal/services"
@@ -49,37 +51,74 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, user)
-
 }
 
 // GetUserById godoc
 // @Summary      Buscar usuário por ID
-// @Description  Retorna os dados de um usuário pelo ID
 // @Tags         User
-// @Accept       json
 // @Produce      json
-// @Param        user  body      dto.CreateUserInput  true  "Dados do usuário"
-// @Success      200  {object}  models.User
-// @Failure      400  {object}  map[string]string
-// @Failure      404  {object}  map[string]string
+// @Param        id   path      int  true  "ID do usuário" minimum(1)
+// @Success      200  {object}  dto.UserResponse
+// @Failure      404  {object}  dto.ErrorResponse
 // @Router       /users/{id} [get]
 func (h *UserHandler) GetUserById(c *gin.Context) {
-	idParam := c.Param("id")
-	id, err := strconv.ParseUint(idParam, 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": err.Error()})
+	var input dto.UserIDInput
+
+	if err := c.ShouldBindUri(&input); err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "id inválido"})
 		return
 	}
 
-	user, err := h.userService.GetUserById(uint(id))
+	user, err := h.userService.GetUserById(input.ID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error": err.Error()})
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{Error: "usuário não encontrado"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	response := dto.UserResponse{
+		UserID:           user.UserID,
+		Nickname:         user.Nickname,
+		Email:            user.Email,
+		DiscordID:        user.DiscordID,
+		RegistrationDate: user.RegistrationDate,
+		EventCount:       user.EventCount,
+		GuideCount:       user.GuideCount,
+		IsModerator:      user.IsModerator,
+		IsVeteran:        user.IsVeteran,
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
-// func GetAllUsers(c *gin.Context) {
-// 	c.IndentedJSON(http.StatusOK, users)
-// }
+// DeleteUserById godoc
+// @Summary      Deletar usuário por ID
+// @Tags         User
+// @Produce      json
+// @Param        id   path      int  true  "ID do usuário" minimum(1)
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  dto.ErrorResponse
+// @Router       /users/{id} [delete]
+func (h *UserHandler) DeleteUserById(c *gin.Context) {
+	var input dto.UserIDInput
+
+	if err := c.ShouldBindUri(&input); err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "id inválido"})
+		return
+	}
+
+	if err := h.userService.DeleteUserById(input.ID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{Error: "usuário não encontrado"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	// Retorna 200 OK com uma mensagem em formato JSON
+	c.JSON(http.StatusOK, gin.H{"message": "usuário deletado com sucesso"})
+}

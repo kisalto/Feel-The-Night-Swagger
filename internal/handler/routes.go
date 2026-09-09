@@ -29,6 +29,7 @@ func SetupRoutes() *gin.Engine {
 	// Rotas de Usuários
 	router.POST("/users", userHandler.CreateUser)
 	router.GET("/users/:id", userHandler.GetUserById)
+	router.DELETE("/users/:id", userHandler.DeleteUserById)
 
 	return router
 }

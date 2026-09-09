@@ -156,7 +156,6 @@ go run ./cmd/api
 
 ```bash
 go build -o ./bin/api ./cmd/api
-./bin/api
 ```
 
 ## Swagger / Documentação da API

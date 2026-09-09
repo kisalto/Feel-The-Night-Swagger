@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"time"
 
 	"github.com/kisalto/Feel-The-Night-Swagger/internal/models"
 	"gorm.io/gorm"
@@ -29,6 +30,12 @@ func (s *UserService) CreateUser(user *models.User) error {
 		return errors.New("Email ja cadastrado")
 	}
 
+	user.RegistrationDate = time.Now()
+	user.EventCount = 0
+	user.GuideCount = 0
+	user.IsModerator = false
+	user.IsVeteran = false
+
 	return s.db.Create(user).Error
 }
 
@@ -36,11 +43,22 @@ func (s *UserService) GetUserById(id uint) (*models.User, error) {
 	var user models.User
 	if err := s.db.First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("Usuário nao econtrado")
+			return nil, err
 		}
 		return nil, err
 	}
 	return &user, nil
 }
 
-//func GetAllUsers()
+func (s *UserService) DeleteUserById(id uint) error {
+	result := s.db.Delete(&models.User{UserID: id})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return nil
+}
