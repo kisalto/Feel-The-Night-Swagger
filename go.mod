@@ -1,4 +1,4 @@
-module github.com/seu-usuario/Feel-The-Night-Swagger
+module github.com/kisalto/Feel-The-Night-Swagger
 
 go 1.27.1
 
