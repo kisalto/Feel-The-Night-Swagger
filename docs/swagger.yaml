@@ -1,26 +1,112 @@
 basePath: /
 definitions:
-  models.User:
+  dto.CreateUserInput:
     properties:
       discordID:
         type: string
       email:
         type: string
-      eventCount:
+      nickname:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - nickname
+    - password
+    type: object
+  models.Character:
+    properties:
+      character_id:
         type: integer
-      guideCount:
+      description:
+        type: string
+      guides:
+        items:
+          $ref: '#/definitions/models.Guide'
+        type: array
+      image_url:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  models.Event:
+    properties:
+      banner_url:
+        type: string
+      day:
+        type: string
+      description:
+        type: string
+      event_id:
         type: integer
-      isModerator:
+      title:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.Guide:
+    properties:
+      banner_url:
+        type: string
+      character:
+        $ref: '#/definitions/models.Character'
+      character_id:
+        type: integer
+      creation_date:
+        type: string
+      description:
+        type: string
+      dislikes:
+        type: integer
+      guide_id:
+        type: integer
+      likes:
+        type: integer
+      link:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      discord_id:
+        type: string
+      email:
+        type: string
+      event_count:
+        type: integer
+      events:
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
+      guide_count:
+        type: integer
+      guides:
+        items:
+          $ref: '#/definitions/models.Guide'
+        type: array
+      is_moderator:
         type: boolean
-      isVeteran:
+      is_veteran:
         type: boolean
       nickname:
         type: string
       password:
         type: string
-      registrationDate:
+      registration_date:
         type: string
-      userID:
+      user_id:
         type: integer
     type: object
 host: localhost:8080
@@ -34,14 +120,14 @@ paths:
     post:
       consumes:
       - application/json
-      description: Cria um usuário com os dados informados no body
+      description: Cria um usuário com os dados informados no body.
       parameters:
       - description: Dados do usuário
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/dto.CreateUserInput'
       produces:
       - application/json
       responses:
@@ -57,18 +143,19 @@ paths:
             type: object
       summary: Criar um novo usuário
       tags:
-      - Users
+      - User
   /users/{id}:
     get:
       consumes:
       - application/json
       description: Retorna os dados de um usuário pelo ID
       parameters:
-      - description: ID do Usuário
-        in: path
-        name: id
+      - description: Dados do usuário
+        in: body
+        name: user
         required: true
-        type: integer
+        schema:
+          $ref: '#/definitions/dto.CreateUserInput'
       produces:
       - application/json
       responses:
@@ -90,5 +177,5 @@ paths:
             type: object
       summary: Buscar usuário por ID
       tags:
-      - Users
+      - User
 swagger: "2.0"

@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/users": {
             "post": {
-                "description": "Cria um usuário com os dados informados no body",
+                "description": "Cria um usuário com os dados informados no body.",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "User"
                 ],
                 "summary": "Criar um novo usuário",
                 "parameters": [
@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/dto.CreateUserInput"
                         }
                     }
                 ],
@@ -68,16 +68,18 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "User"
                 ],
                 "summary": "Buscar usuário por ID",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID do Usuário",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "Dados do usuário",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateUserInput"
+                        }
                     }
                 ],
                 "responses": {
@@ -110,8 +112,13 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.User": {
+        "dto.CreateUserInput": {
             "type": "object",
+            "required": [
+                "email",
+                "nickname",
+                "password"
+            ],
             "properties": {
                 "discordID": {
                     "type": "string"
@@ -119,16 +126,141 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "eventCount": {
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Character": {
+            "type": "object",
+            "properties": {
+                "character_id": {
                     "type": "integer"
                 },
-                "guideCount": {
+                "description": {
+                    "type": "string"
+                },
+                "guides": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Guide"
+                    }
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Event": {
+            "type": "object",
+            "properties": {
+                "banner_url": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "event_id": {
                     "type": "integer"
                 },
-                "isModerator": {
+                "title": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Guide": {
+            "type": "object",
+            "properties": {
+                "banner_url": {
+                    "type": "string"
+                },
+                "character": {
+                    "$ref": "#/definitions/models.Character"
+                },
+                "character_id": {
+                    "type": "integer"
+                },
+                "creation_date": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dislikes": {
+                    "type": "integer"
+                },
+                "guide_id": {
+                    "type": "integer"
+                },
+                "likes": {
+                    "type": "integer"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "discord_id": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "event_count": {
+                    "type": "integer"
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Event"
+                    }
+                },
+                "guide_count": {
+                    "type": "integer"
+                },
+                "guides": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Guide"
+                    }
+                },
+                "is_moderator": {
                     "type": "boolean"
                 },
-                "isVeteran": {
+                "is_veteran": {
                     "type": "boolean"
                 },
                 "nickname": {
@@ -137,10 +269,10 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "registrationDate": {
+                "registration_date": {
                     "type": "string"
                 },
-                "userID": {
+                "user_id": {
                     "type": "integer"
                 }
             }

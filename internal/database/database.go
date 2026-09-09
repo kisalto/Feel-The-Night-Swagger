@@ -40,10 +40,10 @@ func Connect() error {
 
 	err = DB.AutoMigrate(
 		&models.User{},
-		&models.Personagem{},
-		&models.Guia{},
-		&models.Eventos{},
-		&models.UltimoEvento{},
+		&models.Character{},
+		&models.Event{},
+		&models.Guide{},
+		&models.LastEvent{},
 	)
 	if err != nil {
 		return fmt.Errorf("falha ao executar o AutoMigrate: %w", err)

@@ -15,6 +15,13 @@ func NewUserService(db *gorm.DB) *UserService {
 	return &UserService{db: db}
 }
 
+// Change it so userID, registrationDate, isModerator, isVeteran, eventCount and guideCount
+// cant be passed througth the createUser post.
+// userID will be added automaticaly  by the DB
+// registrationDate will get date.now
+// isModerator will always be False
+// isVeteran will always be false
+// eventCount and guideCount will be 0 when creating account
 func (s *UserService) CreateUser(user *models.User) error {
 	var existingUser models.User
 
@@ -36,4 +43,4 @@ func (s *UserService) GetUserById(id uint) (*models.User, error) {
 	return &user, nil
 }
 
-func GetAllUsers()
+//func GetAllUsers()

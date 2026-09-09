@@ -172,7 +172,7 @@ go install github.com/swaggo/swag/cmd/swag@latest
 ### Gerar documentação
 
 ```bash
-swag init -g cmd/api/main.go -o docs
+swag init -d ./cmd/api,./internal/handler,./internal/models,./internal/dto -g main.go
 ```
 
 ### Acessar a documentação
