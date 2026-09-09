@@ -25,7 +25,7 @@ type Personagem struct {
 	PersonagemID uint   `gorm:"primaryKey;column:personagem_id"`
 	Nome         string `gorm:"size:20;not null"`
 	Descricao    string `gorm:"size:255;not null"`
-	ImgURL       string `gorm:"type:255"`
+	ImgURL       string `gorm:"size:255"`
 	Tipo         string `gorm:"size:15;not null"`
 }
 
@@ -35,7 +35,7 @@ func (Personagem) TableName() string { return "personagem" }
 type Guia struct {
 	GuiaID       uint        `gorm:"primaryKey;column:guia_id"`
 	Titulo       string      `gorm:"size:50;not null"`
-	BannerURL    string      `gorm:"type:255"`
+	BannerURL    string      `gorm:"size:255"`
 	Tipo         string      `gorm:"size:30"`
 	Descricao    string      `gorm:"size:50;not null"`
 	Link         string      `gorm:"size:2083;not null"`
@@ -55,7 +55,7 @@ type Eventos struct {
 	EventosID uint      `gorm:"primaryKey;column:eventos_id"`
 	Titulo    string    `gorm:"size:75;not null"`
 	Descricao string    `gorm:"size:255;not null"`
-	BannerURL string    `gorm:"type:255"`
+	BannerURL string    `gorm:"size:255"`
 	Dia       time.Time `gorm:"type:date"`
 	FkUserID  uint      `gorm:"column:fk_user_id;not null"`
 	Usuario   Usuario   `gorm:"foreignKey:FkUserID;constraint:OnDelete:CASCADE"`

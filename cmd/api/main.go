@@ -12,6 +12,11 @@ import (
 	"github.com/kisalto/Feel-The-Night-Swagger/internal/handler"
 )
 
+// @title           Feel The Night API
+// @version         1.0
+// @description     API para gerenciamento de guias, eventos e personagens.
+// @host            localhost:8080
+// @BasePath        /
 func main() {
 	err := godotenv.Load()
 	if err != nil {
