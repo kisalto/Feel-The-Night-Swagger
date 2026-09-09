@@ -17,7 +17,7 @@ func SetupRoutes() *gin.Engine {
 	router := gin.Default()
 
 	// Inicialização de serviços e handlers
-	userService := services.NewUserService(database.DB) // Assumindo que seu pacote database expõe a variável 'DB' do GORM
+	userService := services.NewUserService(database.DB)
 	userHandler := NewUserHandler(userService)
 
 	// Rota do Swagger
@@ -30,6 +30,7 @@ func SetupRoutes() *gin.Engine {
 	router.POST("/users", userHandler.CreateUser)
 	router.GET("/users/:id", userHandler.GetUserById)
 	router.DELETE("/users/:id", userHandler.DeleteUserById)
+	router.PATCH("/users/:id", userHandler.UpdateUser)
 
 	return router
 }

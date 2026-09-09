@@ -62,3 +62,43 @@ func (s *UserService) DeleteUserById(id uint) error {
 
 	return nil
 }
+
+func (s *UserService) UpdateUser(id uint, user *models.User) (*models.User, error) {
+	existingUser, err := s.GetUserById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Email != "" && user.Email != existingUser.Email {
+		var checkEmail models.User
+		err := s.db.Where("email = ? AND user_id != ?", user.Email, id).First(&checkEmail).Error
+		if err == nil {
+			return nil, errors.New("email já cadastrado por outro usuário")
+		}
+	}
+
+	updates := make(map[string]any)
+
+	if user.Nickname != "" {
+		updates["nickname"] = user.Nickname
+	}
+	if user.Email != "" {
+		updates["email"] = user.Email
+	}
+	if user.DiscordID != "" {
+		updates["discord_id"] = user.DiscordID
+	}
+	if user.Password != "" {
+		updates["password"] = user.Password
+	}
+
+	if len(updates) == 0 {
+		return existingUser, nil
+	}
+
+	if err := s.db.Model(existingUser).Updates(updates).Error; err != nil {
+		return nil, err
+	}
+
+	return existingUser, nil
+}

@@ -15,6 +15,14 @@ type UserIDInput struct {
 	ID uint `uri:"id" binding:"required,min=1"`
 }
 
+// UpdateUserInput permite atualizar campos individualmente (todos opcionais)
+type UpdateUser struct {
+	Nickname  string `json:"nickname"`
+	Email     string `json:"email"`
+	DiscordID string `json:"discordID"`
+	Password  string `json:"password"`
+}
+
 // Extras
 type ErrorResponse struct {
 	Error string `json:"error" example:"usuário não encontrado"`

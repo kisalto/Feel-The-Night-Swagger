@@ -122,3 +122,63 @@ func (h *UserHandler) DeleteUserById(c *gin.Context) {
 	// Retorna 200 OK com uma mensagem em formato JSON
 	c.JSON(http.StatusOK, gin.H{"message": "usuário deletado com sucesso"})
 }
+
+// UpdateUser godoc
+// @Summary      Atualizar dados do usuário
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int             true  "ID do usuário" minimum(1)
+// @Param        body  body      dto.UpdateUser  true  "Dados para atualização"
+// @Success      200   {object}  dto.UserResponse
+// @Failure      400   {object}  dto.ErrorResponse
+// @Failure      404   {object}  dto.ErrorResponse
+// @Failure      500   {object}  dto.ErrorResponse
+// @Router       /users/{id} [patch]
+func (h *UserHandler) UpdateUser(c *gin.Context) {
+	var uriInput dto.UserIDInput
+	var bodyInput dto.UpdateUser
+
+	if err := c.ShouldBindUri(&uriInput); err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "id inválido"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&bodyInput); err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "corpo da requisição inválido"})
+		return
+	}
+
+	// Mapeia o DTO para a struct do Model
+	userModel := models.User{
+		Nickname:  bodyInput.Nickname,
+		Email:     bodyInput.Email,
+		DiscordID: bodyInput.DiscordID,
+		Password:  bodyInput.Password,
+	}
+
+	// Passa o ID e a referência do Model para a Service
+	updatedUser, err := h.userService.UpdateUser(uriInput.ID, &userModel)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{Error: "usuário não encontrado"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	response := dto.UserResponse{
+		UserID:           updatedUser.UserID,
+		Nickname:         updatedUser.Nickname,
+		Email:            updatedUser.Email,
+		DiscordID:        updatedUser.DiscordID,
+		RegistrationDate: updatedUser.RegistrationDate,
+		EventCount:       updatedUser.EventCount,
+		GuideCount:       updatedUser.GuideCount,
+		IsModerator:      updatedUser.IsModerator,
+		IsVeteran:        updatedUser.IsVeteran,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
