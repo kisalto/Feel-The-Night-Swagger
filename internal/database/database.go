@@ -39,7 +39,7 @@ func Connect() error {
 	}
 
 	err = DB.AutoMigrate(
-		&models.Usuario{},
+		&models.User{},
 		&models.Personagem{},
 		&models.Guia{},
 		&models.Eventos{},

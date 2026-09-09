@@ -1,9 +1,94 @@
 basePath: /
+definitions:
+  models.User:
+    properties:
+      discordID:
+        type: string
+      email:
+        type: string
+      eventCount:
+        type: integer
+      guideCount:
+        type: integer
+      isModerator:
+        type: boolean
+      isVeteran:
+        type: boolean
+      nickname:
+        type: string
+      password:
+        type: string
+      registrationDate:
+        type: string
+      userID:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: API para gerenciamento de guias, eventos e personagens.
   title: Feel The Night API
   version: "1.0"
-paths: {}
+paths:
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Cria um usuário com os dados informados no body
+      parameters:
+      - description: Dados do usuário
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Criar um novo usuário
+      tags:
+      - Users
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna os dados de um usuário pelo ID
+      parameters:
+      - description: ID do Usuário
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Buscar usuário por ID
+      tags:
+      - Users
 swagger: "2.0"

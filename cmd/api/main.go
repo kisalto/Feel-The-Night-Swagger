@@ -34,6 +34,9 @@ func main() {
 
 	// 3. Inicia o servidor HTTP
 	port := os.Getenv("APP_PORT")
+	if port == "" {
+		port = "8080"
+	}
 	serverPort := fmt.Sprintf(":%s", port)
 	log.Printf("Servidor rodando na porta %s\n", serverPort)
 
