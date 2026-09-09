@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"log/slog"
 	"net/http"
 	"os"
 
@@ -18,10 +17,15 @@ import (
 // @host            localhost:8080
 // @BasePath        /
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		slog.Warn("erro ao carregar o arquivo .env", "error", err)
+	// Cloud Render
+	if err := godotenv.Load(); err != nil {
+		log.Println("WARN: Arquivo .env não encontrado, lendo variáveis de ambiente do sistema.")
 	}
+	// Local
+	//err := godotenv.Load()
+	// if err != nil {
+	// 	slog.Warn("erro ao carregar o arquivo .env", "error", err)
+	// }
 
 	// 1. Conecta no banco de dados e executa o AutoMigrate
 	log.Println("Iniciando conexão com o banco de dados...")

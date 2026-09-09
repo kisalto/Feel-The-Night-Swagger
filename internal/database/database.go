@@ -14,9 +14,17 @@ import (
 var DB *gorm.DB
 
 func Connect() error {
+	// Local
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	return fmt.Errorf("erro ao carregar o arquivo .env: %w", err)
+	// }
+
+	// Cloud render
 	err := godotenv.Load()
 	if err != nil {
-		return fmt.Errorf("erro ao carregar o arquivo .env: %w", err)
+		// Em vez de retornar erro e derrubar o app, apenas avisa no terminal
+		fmt.Println("Aviso: Arquivo .env não encontrado. Lendo variáveis do sistema (Produção).")
 	}
 
 	dsn := fmt.Sprintf(
