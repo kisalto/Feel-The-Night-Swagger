@@ -29,10 +29,10 @@ func SetupRoutes(userHandler *UserHandler, characterHandler *CharacterHandler) *
 	router.PATCH("/users/:id", userHandler.UpdateUser)
 
 	// Rotas de Personagens
-	router.POST("/users", characterHandler.CreateCharacter)
-	// router.GET("/users/:id", characterHandler.GetCharacterById)
-	// router.DELETE("/users/:id", characterHandler.DeleteCharacterById)
-	// router.PATCH("/users/:id", characterHandler.UpdateCharacter)
+	router.POST("/char", characterHandler.CreateCharacter)
+	// router.GET("/char/:id", characterHandler.GetCharacterById)
+	// router.DELETE("/char/:id", characterHandler.DeleteCharacterById)
+	// router.PATCH("/char/:id", characterHandler.UpdateCharacter)
 
 	return router
 }

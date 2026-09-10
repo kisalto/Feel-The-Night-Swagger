@@ -52,7 +52,7 @@ func main() {
 	}
 
 	// 4. Carrega Rotas
-	routes := handler.SetupRoutes()
+	routes := handler.Setup()
 
 	// 5. Inicia o Servidor
 	serverPort := fmt.Sprintf(":%s", port)
