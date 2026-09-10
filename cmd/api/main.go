@@ -7,6 +7,9 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+
+	// Importe o pacote docs sem o "_" para poder acessar a variável SwaggerInfo
+	"github.com/kisalto/Feel-The-Night-Swagger/docs"
 	"github.com/kisalto/Feel-The-Night-Swagger/internal/database"
 	"github.com/kisalto/Feel-The-Night-Swagger/internal/handler"
 )
@@ -14,33 +17,44 @@ import (
 // @title           Feel The Night API
 // @version         1.0
 // @description     API para gerenciamento de guias, eventos e personagens.
-// @host            localhost:8080
 // @BasePath        /
 func main() {
-	// Cloud Render
 	if err := godotenv.Load(); err != nil {
 		log.Println("WARN: Arquivo .env não encontrado, lendo variáveis de ambiente do sistema.")
 	}
-	// Local
-	//err := godotenv.Load()
-	// if err != nil {
-	// 	slog.Warn("erro ao carregar o arquivo .env", "error", err)
-	// }
 
-	// 1. Conecta no banco de dados e executa o AutoMigrate
+	// 1. Tratamento da Porta
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = os.Getenv("APP_PORT")
+	}
+	if port == "" {
+		port = "8080"
+	}
+
+	// 2. Configuração Dinâmica do Swagger via docs.SwaggerInfo
+	renderHost := os.Getenv("RENDER_EXTERNAL_HOSTNAME")
+
+	if renderHost != "" {
+		// Em produção no Render
+		docs.SwaggerInfo.Host = renderHost
+		docs.SwaggerInfo.Schemes = []string{"https"}
+	} else {
+		// Em desenvolvimento local
+		docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", port)
+		docs.SwaggerInfo.Schemes = []string{"http"}
+	}
+
+	// 3. Conexão com o Banco de Dados
 	log.Println("Iniciando conexão com o banco de dados...")
 	if err := database.Connect(); err != nil {
 		log.Fatalf("Erro crítico ao inicializar o banco: %v", err)
 	}
 
-	// 2. Configura e carrega as rotas
+	// 4. Carrega Rotas
 	routes := handler.SetupRoutes()
 
-	// 3. Inicia o servidor HTTP
-	port := os.Getenv("APP_PORT")
-	if port == "" {
-		port = "8080"
-	}
+	// 5. Inicia o Servidor
 	serverPort := fmt.Sprintf(":%s", port)
 	log.Printf("Servidor rodando na porta %s\n", serverPort)
 

@@ -142,7 +142,6 @@ definitions:
       userID:
         type: integer
     type: object
-host: localhost:8080
 info:
   contact: {}
   description: API para gerenciamento de guias, eventos e personagens.
