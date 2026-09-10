@@ -41,12 +41,6 @@ definitions:
       password:
         type: string
     type: object
-  dto.UserErrorResponse:
-    properties:
-      error:
-        example: usuário não encontrado
-        type: string
-    type: object
   dto.UserResponse:
     properties:
       discordID:
@@ -222,12 +216,6 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.User'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
       summary: Criar um novo usuário
       tags:
       - User
@@ -249,10 +237,6 @@ paths:
             additionalProperties:
               type: string
             type: object
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.UserErrorResponse'
       summary: Deletar usuário por ID
       tags:
       - User
@@ -271,10 +255,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UserResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.UserErrorResponse'
       summary: Buscar usuário por ID
       tags:
       - User
@@ -301,18 +281,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.UserErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.UserErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.UserErrorResponse'
       summary: Atualizar dados do usuário
       tags:
       - User

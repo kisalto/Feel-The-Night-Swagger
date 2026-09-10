@@ -28,7 +28,6 @@ func NewUserHandler(userService *services.UserService) *UserHandler {
 // @Produce      json
 // @Param        user  body      dto.CreateUserInput  true  "Dados do usuário"
 // @Success      201   {object}  models.User
-// @Failure      400   {object}  map[string]string
 // @Router       /users [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
 	var input dto.CreateUserInput
@@ -59,7 +58,6 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 // @Produce      json
 // @Param        id   path      int  true  "ID do usuário" minimum(1)
 // @Success      200  {object}  dto.UserResponse
-// @Failure      404  {object}  dto.UserErrorResponse
 // @Router       /users/{id} [get]
 func (h *UserHandler) GetUserById(c *gin.Context) {
 	var input dto.UserIDInput
@@ -100,7 +98,6 @@ func (h *UserHandler) GetUserById(c *gin.Context) {
 // @Produce      json
 // @Param        id   path      int  true  "ID do usuário" minimum(1)
 // @Success      200  {object}  map[string]string
-// @Failure      404  {object}  dto.UserErrorResponse
 // @Router       /users/{id} [delete]
 func (h *UserHandler) DeleteUserById(c *gin.Context) {
 	var input dto.UserIDInput
@@ -131,9 +128,6 @@ func (h *UserHandler) DeleteUserById(c *gin.Context) {
 // @Param        id    path      int             true  "ID do usuário" minimum(1)
 // @Param        body  body      dto.UpdateUser  true  "Dados para atualização"
 // @Success      200   {object}  dto.UserResponse
-// @Failure      400   {object}  dto.UserErrorResponse
-// @Failure      404   {object}  dto.UserErrorResponse
-// @Failure      500   {object}  dto.UserErrorResponse
 // @Router       /users/{id} [patch]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	var uriInput dto.UserIDInput
