@@ -1,5 +1,20 @@
 basePath: /
 definitions:
+  dto.CreateCharacterInput:
+    properties:
+      description:
+        type: string
+      imageURL:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+    required:
+    - description
+    - name
+    - type
+    type: object
   dto.CreateUserInput:
     properties:
       discordID:
@@ -15,12 +30,6 @@ definitions:
     - nickname
     - password
     type: object
-  dto.ErrorResponse:
-    properties:
-      error:
-        example: usuário não encontrado
-        type: string
-    type: object
   dto.UpdateUser:
     properties:
       discordID:
@@ -30,6 +39,12 @@ definitions:
       nickname:
         type: string
       password:
+        type: string
+    type: object
+  dto.UserErrorResponse:
+    properties:
+      error:
+        example: usuário não encontrado
         type: string
     type: object
   dto.UserResponse:
@@ -52,6 +67,24 @@ definitions:
         type: string
       userID:
         type: integer
+    type: object
+  models.Character:
+    properties:
+      characterID:
+        type: integer
+      description:
+        type: string
+      guides:
+        description: Has many guides
+        items:
+          $ref: '#/definitions/models.Guide'
+        type: array
+      imageURL:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
     type: object
   models.Event:
     properties:
@@ -148,6 +181,28 @@ info:
   title: Feel The Night API
   version: "1.0"
 paths:
+  /char:
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo personagem com os dados informados do body
+      parameters:
+      - description: Dados do Personagem
+        in: body
+        name: character
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCharacterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Character'
+      summary: Criar um novo personagem
+      tags:
+      - Character
   /users:
     post:
       consumes:
@@ -197,7 +252,7 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/dto.UserErrorResponse'
       summary: Deletar usuário por ID
       tags:
       - User
@@ -219,7 +274,7 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/dto.UserErrorResponse'
       summary: Buscar usuário por ID
       tags:
       - User
@@ -249,15 +304,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/dto.UserErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/dto.UserErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/dto.UserErrorResponse'
       summary: Atualizar dados do usuário
       tags:
       - User
